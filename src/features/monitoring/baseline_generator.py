@@ -52,7 +52,7 @@ def generate_baseline_statistics(
             "inferred_type": "Fractional" if pd.api.types.is_float_dtype(s) else "Integral",
             "numerical_statistics": {
                 "common": {
-                    "num_present": int(len(s)),
+                    "num_present": len(s),
                     "num_missing": int(df[col].isna().sum()),
                 },
                 "mean": float(s.mean()),
@@ -80,7 +80,6 @@ def generate_baseline_statistics(
 def _build_buckets(series: pd.Series, n_buckets: int = 10) -> list[dict]:
     quantiles = np.quantile(series, np.linspace(0, 1, n_buckets + 1))
     buckets: list[dict] = []
-    total = len(series)
     for i in range(n_buckets):
         lo = float(quantiles[i])
         hi = float(quantiles[i + 1])

@@ -6,8 +6,9 @@ comparisons of inference behavior across backends.
 
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
+from typing import Any
 
 from pyspark.sql import DataFrame
 
@@ -60,7 +61,7 @@ class DualSink:
         result = DualSinkResult()
 
         with ThreadPoolExecutor(max_workers=2) as pool:
-            futures = {
+            futures: dict[Future[Any], str] = {
                 pool.submit(self.sagemaker.write_batch, records): "sagemaker",
                 pool.submit(self.databricks.write_batch, df): "databricks",
             }

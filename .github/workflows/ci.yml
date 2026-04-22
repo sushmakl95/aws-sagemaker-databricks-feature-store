@@ -33,7 +33,7 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-      - run: pip install "mypy>=1.9.0" "types-PyYAML"
+      - run: pip install "mypy>=1.9.0" "types-PyYAML" "types-requests"
       - run: mypy src --ignore-missing-imports
 
   security:

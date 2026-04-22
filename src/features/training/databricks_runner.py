@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
+from typing import Any
 
 import requests
 
@@ -41,9 +42,16 @@ class DatabricksTrainingRunner:
 
     def submit(self) -> int:
         """Submit a one-off notebook run. Returns the run_id."""
+        new_cluster: dict[str, Any] = dict(self.config.cluster_spec)
+        if self.config.instance_profile_arn:
+            new_cluster["aws_attributes"] = {
+                "instance_profile_arn": self.config.instance_profile_arn,
+                "availability": "SPOT_WITH_FALLBACK",
+            }
+
         payload = {
             "run_name": f"{self.config.job_name_prefix}-{int(time.time())}",
-            "new_cluster": self.config.cluster_spec,
+            "new_cluster": new_cluster,
             "notebook_task": {
                 "notebook_path": self.config.notebook_path,
                 "base_parameters": self.config.notebook_params,
@@ -51,11 +59,6 @@ class DatabricksTrainingRunner:
             "timeout_seconds": self.config.timeout_seconds,
             "max_retries": 1,
         }
-        if self.config.instance_profile_arn:
-            payload["new_cluster"]["aws_attributes"] = {
-                "instance_profile_arn": self.config.instance_profile_arn,
-                "availability": "SPOT_WITH_FALLBACK",
-            }
 
         response = requests.post(
             f"{self.base_url}/api/2.1/jobs/runs/submit",

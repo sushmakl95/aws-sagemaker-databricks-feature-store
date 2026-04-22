@@ -8,7 +8,8 @@ from features.training.sagemaker_runner import (
     SageMakerTrainingConfig,
     SageMakerTrainingRunner,
 )
-from features.training.train import TrainingConfig, run as run_training
+from features.training.train import TrainingConfig
+from features.training.train import run as run_training
 
 __all__ = [
     "DatabricksTrainingConfig",
