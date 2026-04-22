@@ -1,0 +1,61 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0, "y": 0, "width": 12, "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/SageMaker", "Invocations"],
+          [".", "ModelLatency"]
+        ],
+        "period": 60,
+        "stat": "Average",
+        "region": "us-east-1",
+        "title": "Endpoint Throughput + Latency"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12, "y": 0, "width": 12, "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/SageMaker", "Invocation4XXErrors"],
+          [".", "Invocation5XXErrors"]
+        ],
+        "period": 60,
+        "stat": "Sum",
+        "region": "us-east-1",
+        "title": "Endpoint Errors"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0, "y": 6, "width": 12, "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/Kinesis", "IncomingRecords"],
+          [".", "IteratorAgeMilliseconds"]
+        ],
+        "period": 60,
+        "stat": "Average",
+        "region": "us-east-1",
+        "title": "Kinesis Ingest Health"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12, "y": 6, "width": 12, "height": 6,
+      "properties": {
+        "metrics": [
+          ["FeaturePlatform", "RecordsIngested"],
+          [".", "RecordsFailed"],
+          [".", "IngestDurationMs"]
+        ],
+        "period": 300,
+        "stat": "Sum",
+        "region": "us-east-1",
+        "title": "Feature Ingest Pipeline"
+      }
+    }
+  ]
+}

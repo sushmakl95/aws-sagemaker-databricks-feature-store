@@ -1,0 +1,20 @@
+project_name = "feature-platform"
+environment  = "dev"
+aws_region   = "us-east-1"
+cost_center  = "ml-platform"
+
+vpc_cidr_block     = "10.80.0.0/16"
+availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
+
+kinesis_shard_count = 1
+
+endpoint_instance_type  = "ml.t2.medium"
+endpoint_instance_count = 1
+
+databricks_workspace_url = "https://dbc-xxx.cloud.databricks.com"
+databricks_token         = "CHANGE_ME"
+mlflow_db_password       = "CHANGE_ME"
+
+alarm_email_recipients = ["ml-platform-dev@example.com"]
+monthly_budget_usd     = 400
+log_retention_days     = 7

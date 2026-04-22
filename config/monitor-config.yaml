@@ -1,0 +1,48 @@
+# Model Monitor + drift detector configuration.
+
+version: "1.0"
+
+endpoints:
+  - name: churn-predictor-prod
+    baseline_s3_uri: s3://${ARTIFACTS_BUCKET}/baselines/churn_v3/
+    monitoring_schedule: cron(0 * ? * * *)  # hourly
+
+    # Drift thresholds for the custom detector
+    drift_thresholds:
+      psi_warning: 0.1
+      psi_critical: 0.25
+      ks_pvalue_critical: 0.01
+
+    # Features to monitor (from the data capture)
+    monitored_features:
+      - events_last_1h
+      - events_last_5min
+      - total_orders
+      - total_spend
+      - avg_order_value
+
+  - name: fraud-detector-prod
+    baseline_s3_uri: s3://${ARTIFACTS_BUCKET}/baselines/fraud_v7/
+    monitoring_schedule: cron(*/30 * ? * * *)  # every 30 min (higher severity)
+
+    drift_thresholds:
+      psi_warning: 0.05
+      psi_critical: 0.15
+      ks_pvalue_critical: 0.005
+
+    monitored_features:
+      - events_last_5min
+      - distinct_products_last_1h
+      - avg_order_value_last_1h
+
+alerts:
+  channels:
+    sns_topic_arn: ${SNS_ALERTS_TOPIC_ARN}
+    slack_webhook_secret_id: ${SLACK_WEBHOOK_SECRET_ID}
+
+  routing:
+    - severity: critical
+      channels: [sns, slack]
+      escalate_after_minutes: 15
+    - severity: warning
+      channels: [slack]

@@ -1,0 +1,5 @@
+bucket         = "feature-platform-tfstate-dev-<suffix>"
+key            = "feature-platform/dev/terraform.tfstate"
+region         = "us-east-1"
+dynamodb_table = "feature-platform-tfstate-locks-dev"
+encrypt        = true

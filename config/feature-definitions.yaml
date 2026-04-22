@@ -1,0 +1,90 @@
+# Canonical feature catalog.
+# This file is the human-readable index of all feature views.
+# CI compares against the Feast registry to catch undocumented features.
+
+version: "1.0"
+
+feature_views:
+  - name: user_recency
+    entity: user
+    ttl_seconds: 3600
+    owner: ml-platform
+    freshness: streaming
+    description: Per-event streaming aggregates over 5min and 1h windows
+    features:
+      - name: events_last_5min
+        type: int32
+      - name: events_last_1h
+        type: int32
+      - name: distinct_products_last_1h
+        type: int32
+      - name: avg_order_value_last_1h
+        type: float32
+      - name: seconds_since_last_event
+        type: int32
+
+  - name: user_lifetime
+    entity: user
+    ttl_seconds: 2592000  # 30 days
+    owner: data-platform
+    freshness: batch_daily
+    description: Lifetime aggregates, updated nightly from OLTP sources
+    features:
+      - name: account_age_days
+        type: int32
+      - name: total_orders
+        type: int32
+      - name: total_spend
+        type: float32
+      - name: avg_order_value
+        type: float32
+      - name: distinct_products_purchased
+        type: int32
+      - name: churn_risk_score
+        type: float32
+
+  - name: product_features
+    entity: product
+    ttl_seconds: 604800  # 7 days
+    owner: catalog-team
+    freshness: batch_hourly
+    description: Product-level aggregates + content embedding
+    features:
+      - name: total_purchases_7d
+        type: int32
+      - name: total_purchases_30d
+        type: int32
+      - name: unique_buyers_30d
+        type: int32
+      - name: avg_rating
+        type: float32
+      - name: price_usd
+        type: float32
+      - name: embedding
+        type: float32_list
+        shape: [64]
+
+models:
+  - name: churn_predictor
+    version: v3
+    uses:
+      - user_recency
+      - user_lifetime
+    registered_at: "2026-04-15T00:00:00Z"
+    owner: ml-platform
+
+  - name: fraud_detector
+    version: v7
+    uses:
+      - user_recency
+    registered_at: "2026-04-10T00:00:00Z"
+    owner: risk-ml
+
+  - name: recommendation_model
+    version: v2
+    uses:
+      - user_recency
+      - user_lifetime
+      - product_features
+    registered_at: "2026-04-18T00:00:00Z"
+    owner: recsys

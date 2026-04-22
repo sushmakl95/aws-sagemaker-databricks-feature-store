@@ -1,0 +1,61 @@
+{
+  "title": "Feature Platform Health",
+  "uid": "feature-platform-health",
+  "version": 1,
+  "schemaVersion": 39,
+  "tags": ["ml", "feature-store", "sagemaker", "databricks"],
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Endpoint Invocations/sec",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 6 },
+      "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
+      "targets": [
+        { "namespace": "AWS/SageMaker", "metricName": "Invocations", "statistic": "Sum", "period": "60" }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Endpoint Latency P99",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 6 },
+      "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
+      "targets": [
+        { "namespace": "AWS/SageMaker", "metricName": "ModelLatency", "statistic": "p99", "period": "60" }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Feature Ingest Throughput",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 6, "w": 12, "h": 6 },
+      "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
+      "targets": [
+        { "namespace": "FeaturePlatform", "metricName": "RecordsIngested", "statistic": "Sum", "period": "60" }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Online Lookup Latency",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 6, "w": 12, "h": 6 },
+      "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
+      "targets": [
+        { "namespace": "FeaturePlatform", "metricName": "OnlineLookupLatencyMs", "statistic": "Average", "period": "60" }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Drift Score by Feature (last 24h)",
+      "type": "heatmap",
+      "gridPos": { "x": 0, "y": 12, "w": 24, "h": 8 },
+      "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
+      "targets": [
+        { "namespace": "FeaturePlatform", "metricName": "DataDriftScore", "statistic": "Maximum", "period": "3600" }
+      ]
+    }
+  ]
+}

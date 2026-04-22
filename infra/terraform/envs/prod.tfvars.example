@@ -1,0 +1,20 @@
+project_name = "feature-platform"
+environment  = "prod"
+aws_region   = "us-east-1"
+cost_center  = "ml-platform"
+
+vpc_cidr_block     = "10.90.0.0/16"
+availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
+
+kinesis_shard_count = 4
+
+endpoint_instance_type  = "ml.m5.xlarge"
+endpoint_instance_count = 3
+
+databricks_workspace_url = "https://dbc-prod.cloud.databricks.com"
+databricks_token         = "FETCH_FROM_SECRETS_MANAGER"
+mlflow_db_password       = "FETCH_FROM_SECRETS_MANAGER"
+
+alarm_email_recipients = ["oncall-ml@example.com", "pager-ml@example.com"]
+monthly_budget_usd     = 1800
+log_retention_days     = 90

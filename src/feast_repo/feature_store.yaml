@@ -1,0 +1,39 @@
+# Feast project configuration for the AWS SageMaker + Databricks feature platform.
+#
+# Two profiles are supported via env var FEAST_PROFILE:
+#   - sagemaker (default): online = DynamoDB, offline = S3/Athena
+#   - databricks:          online = Databricks Online Tables, offline = Delta
+#
+# The provider below is for the SageMaker track. For Databricks, swap to the
+# spark offline store + databricks online store (see docs/ONLINE_OFFLINE_PARITY.md).
+
+project: feature_platform
+registry:
+    registry_type: sql
+    path: ${FEAST_REGISTRY_URI:-postgresql://feast:feast@localhost:5432/feast_registry}
+    cache_ttl_seconds: 60
+
+provider: aws
+
+online_store:
+    type: dynamodb
+    region: ${AWS_REGION:-us-east-1}
+    table_name_template: "${FEAST_TABLE_PREFIX:-feature-platform}-{project}_{name}"
+
+offline_store:
+    type: redshift
+    cluster_id: ${REDSHIFT_CLUSTER_ID:-feature-platform-offline}
+    region: ${AWS_REGION:-us-east-1}
+    user: ${REDSHIFT_USER:-feast_reader}
+    database: ${REDSHIFT_DB:-analytics}
+    s3_staging_location: s3://${ICEBERG_WAREHOUSE}/feast_staging/
+    iam_role: ${REDSHIFT_IAM_ROLE}
+
+feature_server:
+    enabled: true
+
+flags:
+    alpha_features: true
+    on_demand_transforms: true
+
+entity_key_serialization_version: 2
