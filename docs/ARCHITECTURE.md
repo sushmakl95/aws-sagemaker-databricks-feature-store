@@ -1,5 +1,76 @@
 # Architecture
 
+## End-to-end view
+
+```mermaid
+flowchart LR
+    subgraph Sources["📥 Sources"]
+        EV[App events]
+        OLTP[(OLTP CDC)]
+        S3R[(S3 raw events)]
+    end
+
+    subgraph Compute["⚙️ Compute"]
+        KL[Lambda streaming features]
+        SPB[Spark batch features]
+        EMB[Embedding batch nightly]
+    end
+
+    subgraph Feast["📒 Feast abstraction"]
+        REG[Feast registry]
+        DSK[Dual sink<br/>SageMaker + Databricks]
+    end
+
+    subgraph Online["⚡ Online μs"]
+        DDB[(DynamoDB<br/>SageMaker track)]
+        ODT[(Databricks<br/>Online Tables)]
+    end
+
+    subgraph Offline["📚 Offline history"]
+        SMFS[(SageMaker FS offline S3)]
+        DBFS[(Databricks FS Delta)]
+    end
+
+    subgraph Vector["🧠 Vector / LLM features"]
+        PG[(pgvector)]
+        OS[(OpenSearch k-NN)]
+        SIM[similarity_search API]
+    end
+
+    subgraph Serving["📡 Serving"]
+        LK[online_lookup]
+        PRED[predictor / SageMaker Endpoint]
+        RAG[RAG / LLM consumers]
+    end
+
+    subgraph Gov["📒 Lineage + Monitoring"]
+        OL[OpenLineage emitter]
+        MQ[Marquez / DataHub]
+        MM[SageMaker Model Monitor]
+        DRIFT[PSI / KS drift detector]
+    end
+
+    EV --> KL
+    OLTP --> SPB
+    S3R --> SPB
+    SPB --> EMB
+    KL --> DSK
+    SPB --> DSK
+    DSK --> DDB
+    DSK --> ODT
+    DSK --> SMFS
+    DSK --> DBFS
+    EMB --> PG
+    EMB --> OS
+    PG --> SIM --> RAG
+    OS --> SIM
+    DDB --> LK --> PRED
+    ODT --> LK
+    DSK -. lineage .-> OL --> MQ
+    PRED --> MM
+    PRED --> DRIFT
+```
+
 ## Core decisions
 
 **1. Feast as the unified abstraction, not "one platform wins."** SageMaker Feature Store is purpose-built for AWS-native ML teams. Databricks Feature Store is purpose-built for lakehouse-first teams. They're both good at their respective jobs. Rather than pick one, we expose both through Feast so downstream consumers write the same code either way. When we need to migrate a workload from one to the other, the consumer-side change is zero.
